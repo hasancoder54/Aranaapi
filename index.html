@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Askeri İnzibat Bilgi Sorgu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to bottom, #0f0f2e, #1b1b3a, #101032);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 28px;
+            text-align: center;
+        }
+        input {
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 20px;
+        }
+        .info {
+            background-color: #18182f;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 0 15px #000;
+        }
+        .info img {
+            width: 100px;
+            border-radius: 8px;
+        }
+        .group {
+            margin-top: 10px;
+            background: #252548;
+            padding: 10px;
+            border-radius: 6px;
+        }
+        .label {
+            font-weight: bold;
+            color: #a8d0ff;
+        }
+    </style>
+</head>
+<body>
+    <h1>Askeri İnzibat Roblox Sorgu</h1>
+    <input type="text" id="username" placeholder="Roblox ismini yaz ve Enter'a bas" onkeydown="if(event.key === 'Enter') fetchUser()">
+    <div id="result" class="info" style="display:none;"></div>
+
+    <script>
+        async function fetchUser() {
+            const username = document.getElementById("username").value.trim();
+            if (!username) return;
+
+            const res = await fetch(`/api?username=${encodeURIComponent(username)}`);
+            const data = await res.json();
+            const result = document.getElementById("result");
+
+            if (data.error) {
+                result.innerHTML = `<p>${data.error}</p>`;
+                result.style.display = 'block';
+                return;
+            }
+
+            result.innerHTML = `
+                <img src="${data.avatar}" alt="Avatar"><br><br>
+                <div><span class="label">Kullanıcı Adı:</span> ${data.username}</div>
+                <div><span class="label">Görünen Ad:</span> ${data.displayName}</div>
+                <div><span class="label">ID:</span> ${data.id}</div>
+                <div><span class="label">Profil:</span> <a href="${data.profile}" target="_blank" style="color:#79bfff;">Git</a></div>
+                <div><span class="label">Hesap Oluşturulma:</span> ${new Date(data.created).toLocaleDateString()}</div>
+                <div><span class="label">Banlı mı?:</span> ${data.isBanned ? "Evet" : "Hayır"}</div>
+                <div class="label">Gruplar:</div>
+                ${data.groups.map(g => `<div class="group">${g.name} - (${g.role})</div>`).join("")}
+            `;
+            result.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
